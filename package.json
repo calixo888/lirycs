@@ -1,0 +1,11 @@
+{
+  "name": "lircys",
+  "version": "1.0.0",
+  "description": "Music lyric game and store",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

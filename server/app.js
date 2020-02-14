@@ -2,6 +2,14 @@ const express = require("express");
 const mongodb = require("mongodb");
 const cookieParser = require("cookie-parser");
 const passwordHash = require("password-hash");
+const axios = require("axios");
+const rndSong = require("rnd-song");
+
+// Global configurations for 'rnd-song' to pull a random song
+const rndOptions = {
+  api_key: '4120048823986300b7c8140a18addb4f',
+  language: 'en'
+};
 
 app = express();
 
@@ -22,6 +30,14 @@ app.engine('html', require('ejs').renderFile);
 const MongoClient = mongodb.MongoClient;
 const ObjectId = mongodb.ObjectId;
 const mongoUrl = process.env.MONGODB_URI || "mongodb://localhost:27017";
+
+// Global variables
+const musixMatchAPIKey = "4120048823986300b7c8140a18addb4f"
+
+// Global API link generators
+const getLyricsLink = (trackId) => {
+  return `https://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id=${trackId}&apikey=${musixMatchAPIKey}`;
+};
 
 
 // Restricting login-only pages
@@ -177,6 +193,36 @@ app.route("/game")
   .get((req, res) => {
     res.render("game.html");
   });
+
+app.route("/game/guess-the-song")
+  .get((req, res) => {
+    // Grabbing random song
+    rndSong(rndOptions, function(err, rnd) {
+      if (!err) {
+        // console.log(`Artist: ${res.track.track_id}`);
+        // Grabbing random track ID
+        const trackId = rnd.track.track_id;
+
+        // Generating lyrics API link
+        const lyricsLink = getLyricsLink(trackId);
+
+        // Making API call
+        axios.get(lyricsLink).then((response) => {
+          const lyrics = response.data.message.body.lyrics.lyrics_body.split("\n");
+          const randomLyric = lyrics[Math.floor(Math.random()*lyrics.length)];
+
+          res.render("games/guess-the-song.html", context={
+            lyric: randomLyric
+          });
+        });
+      } else { console.log(new Error(err)); }
+    });
+  })
+
+app.route("/game/guess-the-lyric")
+  .get((req, res) => {
+    res.render("games/guess-the-lyric.html");
+  })
 
 
 // Setting up server for production

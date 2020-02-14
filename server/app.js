@@ -208,7 +208,11 @@ app.route("/game/guess-the-song")
 
         // Making API call
         axios.get(lyricsLink).then((response) => {
-          const lyrics = response.data.message.body.lyrics.lyrics_body.split("\n");
+          // Grabbing lyrics body and splitting on newlines, which splits up all the sentences
+          let lyrics = response.data.message.body.lyrics.lyrics_body.split("\n");
+          lyrics = lyrics.filter(lyric => lyric.length > 5);
+
+          // Grabbing random lyric from the lyrics sentences
           const randomLyric = lyrics[Math.floor(Math.random()*lyrics.length)];
 
           res.render("games/guess-the-song.html", context={

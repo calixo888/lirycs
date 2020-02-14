@@ -4,15 +4,21 @@
   "description": "Music lyric game and store",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon server/app.js",
-    "start": "node server/app.js"
+    "dev": "nodemon server/app.js -V -L",
+    "start": "node server/app.js",
+    "compile:sass": "node-sass server/static/sass/main.scss server/static/css/styles.css -w"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.19.0",
-    "cors": "^2.8.5",
+    "cookie-parser": "^1.4.4",
+    "ejs": "^3.0.1",
     "express": "^4.17.1",
-    "mongodb": "^3.5.3"
+    "mongodb": "^3.5.3",
+    "password-hash": "^1.2.2",
+    "sass": "^1.25.0"
+  },
+  "devDependencies": {
+    "node-sass": "^4.13.1"
   }
 }

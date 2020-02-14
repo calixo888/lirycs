@@ -4,7 +4,8 @@
   "description": "Music lyric game and store",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon server/app.js",
+    "start": "node server/app.js"
   },
   "author": "",
   "license": "ISC",

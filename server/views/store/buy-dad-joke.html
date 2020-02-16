@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>Dashboard</title>
+    <title>Buy Dad Joke</title>
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   </head>
@@ -36,36 +36,31 @@
     </nav>
 
     <div class="container">
-      <div class="row mt-5">
-        <div class="col-sm">
-          <h1>Dashboard</h1>
-          <h3>Welcome, <%= currentUser.username %></h3>
+      <h1>Buy Dad Joke</h1>
+      <button class="btn btn-primary" onclick="getDadJoke()">Buy Dad Joke! - 30 credits</button>
 
-          <h5>Information</h5>
-          <ul>
-            <li><strong>Name:</strong> <%= currentUser.name %></li>
-            <li><strong>Email:</strong> <%= currentUser.email %></li>
-          </ul>
-        </div>
-        <div class="col-sm">
-          <h3>Dad Jokes</h3>
-          <ul>
-            <% if (dadJokes) { %>
-              <% for (dadJoke of dadJokes) { %>
-                <li><%= dadJoke %></li>
-              <% } %>
-            <% } %>
-          </ul>
-        </div>
-        <div class="col-sm">
-          <h3>Memes</h3>
-          <% if (memes) { %>
-            <% for (meme of memes) { %>
-              <li><%= meme %></li>
-            <% } %>
-          <% } %>
-        </div>
-      </div>
+      <p class="dadJoke"><%= dadJoke %></p>
     </div>
   </body>
+  <style>
+    .dadJoke {
+      display: none;
+    }
+  </style>
+  <script>
+    function getDadJoke() {
+      fetch("/store/buy-dad-joke", {
+        method: "POST"
+      }).then((response) => {
+        return response.json();
+      }).then((json_data) => {
+        var dadJoke = json_data.joke;
+
+        var joke_label = document.querySelector(".dadJoke");
+
+        joke_label.innerHTML = dadJoke;
+        joke_label.style.display = "block";
+      });
+    }
+  </script>
 </html>

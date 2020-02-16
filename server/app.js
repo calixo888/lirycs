@@ -32,12 +32,21 @@ const ObjectId = mongodb.ObjectId;
 const mongoUrl = process.env.MONGODB_URI || "mongodb://localhost:27017";
 
 // Global variables
-const musixMatchAPIKey = "4120048823986300b7c8140a18addb4f"
+const musixMatchAPIKey = "4120048823986300b7c8140a18addb4f";
+
+// Store Item Credit Prices
+const dadJokeCreditPrice = 30;
+const memeCreditprice = 50;
 
 // Global API link generators
 const getLyricsLink = (trackId) => {
   return `https://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id=${trackId}&apikey=${musixMatchAPIKey}`;
 };
+
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 
 // Restricting login-only pages
@@ -151,7 +160,12 @@ app.route("/register")
                 name: registerData.name,
                 email: registerData.email,
                 username: registerData.username,
-                password: passwordHash.generate(registerData.password)  // Hashing password
+                password: passwordHash.generate(registerData.password),  // Hashing password
+                credits: 0,  // Stores number of credits the user has
+                storeItems: {  // Stores all lasting items bought in store
+                  dadJokes: [],  // Holds all dad jokes
+                  memes: [],  // Holds the links to all memes
+                },
               };
 
               userCollection.insertOne(user);
@@ -177,56 +191,374 @@ app.get("/logout", (req, res) => {
 
 
 app.get("/dashboard", (req, res) => {
-  res.render("dashboard.html");
+  // Grabbing dad jokes for currentUser
+  const currentUser = req.cookies.currentUser;
+
+  MongoClient.connect(mongoUrl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }, (err, client) => {
+    if (err) throw err;
+
+    const userCollection = client.db("lirycs").collection("users");
+
+    userCollection.find({ username: currentUser.username }).toArray((err, users) => {
+      if (err) throw err;
+
+      const user = users[0];
+
+      const dadJokes = user.storeItems.dadJokes;
+      const memes = user.storeItems.memes;
+
+      res.render("dashboard.html", context={
+        dadJokes,
+        memes
+      });
+    });
+  });
 });
 
 app.get("/leaderboards", (req, res) => {
-  res.render("leaderboards.html");
+  MongoClient.connect(mongoUrl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }, (err, client) => {
+    if (err) throw err;
+
+    const userCollection = client.db("lirycs").collection("users");
+
+    userCollection.find({}).limit(10).sort({credits: -1}).toArray((err, users) => {
+      users.forEach(user => user["index"] = users.indexOf(user));
+      res.render("leaderboards.html", context={
+        users,
+      });
+    });
+  });
 });
 
-app.route("/store")
-  .get((req, res) => {
+app.get("/leaderboards/full", (req, res) => {
+  MongoClient.connect(mongoUrl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }, (err, client) => {
+    if (err) throw err;
+
+    const userCollection = client.db("lirycs").collection("users");
+
+    userCollection.find({}).sort({credits: -1}).toArray((err, users) => {
+      users.forEach(user => user["index"] = users.indexOf(user));
+      res.render("leaderboards.html", context={
+        users,
+      });
+    });
+  });
+});
+
+
+// STORE ROUTES
+app.get("/store", (req, res) => {
     res.render("store.html");
   });
 
+app.route("/store/buy-dad-joke")
+  .get((req, res) => {
+    res.render("store/buy-dad-joke.html", context={
+      dadJoke: undefined
+    });
+  })
+
+  .post((req, res) => {
+    axios.get("https://icanhazdadjoke.com/", {
+      headers: {
+        "Accept": "application/json"
+      }
+    }).then((response) => {
+      const dadJoke = response.data.joke;
+
+      // Adding dad joke to user's collection
+      MongoClient.connect(mongoUrl, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      }, (err, client) => {
+        if (err) throw err;
+
+        const userCollection = client.db("lirycs").collection("users");
+
+        // Grabbing currentUser's current dad joke repository
+        let currentUserDadJokes = undefined;
+        userCollection.find({ username: req.cookies.currentUser.username }).toArray((err, users) => {
+          // Grabbing currentUser mongo object
+          const user = users[0];
+
+          // Getting current user Mongo object's current dad jokes list
+          currentUserDadJokes = user.storeItems.dadJokes;
+
+          // Appending new dad joke to current list
+          currentUserDadJokes.push(dadJoke);
+
+          // Calculating new credits for user by subtracting credit price
+          const updatedUserCredits = user.credits - dadJokeCreditPrice;
+
+          // Setting new credit value to 'currentUser' cookie
+          let currentUser = req.cookies.currentUser;
+          currentUser.credits = updatedUserCredits;
+          res.cookie("currentUser", currentUser);
+
+          // Updating currentUser to add dad joke to store items
+          userCollection.updateOne({ username: req.cookies.currentUser.username }, {
+            $set: {
+              // Taking inner document of dadJokes and setting it to the same thing with the new dad joke appended to it
+              "storeItems.dadJokes": currentUserDadJokes,
+              "credits": updatedUserCredits,
+            }
+          });
+
+          // Sending dad joke in JSON format for capture and parsing in frontend
+          res.send({
+            joke: dadJoke
+          });
+        });
+      });
+    });
+  });
+
+app.route("/store/buy-meme")
+  .get((req, res) => {
+    res.render("store/buy-meme.html");
+  });
+
+app.route("/store/gamble")
+  .get((req, res) => {
+    res.render("store/gamble.html");
+  });
+
+app.route("/store/send-to-friend")
+  .get((req, res) => {
+    res.render("store/send-to-friend.html", context={
+      initialSuccess: null,
+      initialError: null
+    });
+  })
+
+  .post((req, res) => {
+    const sendToFriendData = req.body;
+    const targetUsername = sendToFriendData.username;
+    const creditAmount = parseInt(sendToFriendData.creditAmount);
+
+    MongoClient.connect(mongoUrl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    }, (err, client) => {
+      if (err) throw err;
+
+      const userCollection = client.db("lirycs").collection("users");
+
+      // Validating that this target user exists
+      userCollection.find({ username: targetUsername }).toArray((err, users) => {
+        if (err) throw err;
+
+        if (users.length == 0) {  // No user exists
+          res.render("store/send-to-friend.html", context={
+            initialSuccess: null,
+            initialError: "User does not exist."
+          });
+        }
+
+        else {
+          // Adding to target user's credit amount
+          const targetUser = users[0];
+          const targetUserNewCreditAmount = targetUser.credits + creditAmount
+
+          userCollection.updateOne({ username: targetUser.username }, {
+            $set: {
+              credits: targetUserNewCreditAmount
+            }
+          });
+
+          // Subtracting from currentUser's credit amount
+          const currentUser = req.cookies.currentUser;
+          const currentUserNewCreditAmount = currentUser.credits - creditAmount;
+
+          userCollection.updateOne({ username: currentUser.username }, {
+            $set: {
+              credits: currentUserNewCreditAmount
+            }
+          });
+
+          // Modifying 'currentUser' cookie's credit amount
+          currentUser.credits = currentUserNewCreditAmount;
+          res.cookie("currentUser", currentUser);
+
+          // Re-rendering page with success message
+          res.render("store/send-to-friend.html", context={
+            initialSuccess: `Successfully transferred ${creditAmount} to ${targetUser.username}.`,
+            initialError: null
+          });
+        }
+      });
+    });
+  });
+
+
+// GAME ROUTES
 app.route("/game")
   .get((req, res) => {
     res.render("game.html");
   });
 
 app.route("/game/guess-the-song")
-  .get((req, res) => {
+  .get(async (req, res) => {
+    // Getting 3 random song titles
+    let songTitles = [];
+    for (let i = 0; i < 3; i++) {
+      rndSong(rndOptions, function(err, rnd) {
+        if (!err) {
+          songTitles.push(rnd.track.track_name)
+        } else { console.log(new Error(err)); }
+      });
+    }
+
     // Grabbing random song
     rndSong(rndOptions, function(err, rnd) {
       if (!err) {
-        // console.log(`Artist: ${res.track.track_id}`);
         // Grabbing random track ID
         const trackId = rnd.track.track_id;
 
         // Generating lyrics API link
         const lyricsLink = getLyricsLink(trackId);
 
+        // Pushing new title to songTitles
+        songTitles.push(rnd.track.track_name);
+
         // Making API call
-        axios.get(lyricsLink).then((response) => {
-          // Grabbing lyrics body and splitting on newlines, which splits up all the sentences
-          let lyrics = response.data.message.body.lyrics.lyrics_body.split("\n");
-          lyrics = lyrics.filter(lyric => lyric.length > 5);
+        axios.get(lyricsLink)
+          .then((response) => {
+            // Grabbing lyrics body and splitting on newlines, which splits up all the sentences
+            let lyrics = response.data.message.body.lyrics.lyrics_body.split("\n").slice(0, -2);
+            lyrics = lyrics.filter(lyric => lyric.length > 5);
 
-          // Grabbing random lyric from the lyrics sentences
-          const randomLyric = lyrics[Math.floor(Math.random()*lyrics.length)];
+            // Grabbing random lyric from the lyrics sentences
+            const randomLyric = lyrics[Math.floor(Math.random()*lyrics.length)];
 
-          res.render("games/guess-the-song.html", context={
-            lyric: randomLyric
+            res.render("games/guess-the-song.html", context={
+              lyric: randomLyric,
+              songTitles: songTitles,
+              correctSong: rnd.track.track_name
           });
         });
+
       } else { console.log(new Error(err)); }
     });
   })
 
-app.route("/game/guess-the-lyric")
-  .get((req, res) => {
-    res.render("games/guess-the-lyric.html");
+  .post((req, res) => {
+    const operation = req.query.operation;
+    let credits = req.query.credits;
+
+    // Parsing string to integer
+    credits = parseInt(credits);
+
+    // Adding/subtracting credits from user's total credits
+    MongoClient.connect(mongoUrl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    }, (err, client) => {
+      if (err) throw err;
+
+      const userCollection = client.db("lirycs").collection("users");
+
+      // Modifying 'currentUser' cookie
+      let currentUser = req.cookies.currentUser;
+
+      let endCredits = undefined;
+      if (operation == "add") {  // Add credits
+        endCredits = currentUser.credits + credits;
+      }
+      else {  // Subtract credits
+        endCredits = currentUser.credits - credits;
+      }
+
+      currentUser.credits = endCredits;
+
+      // Updating Mongo user with 'currentUser' cookie data
+      userCollection.updateOne({ username: req.cookies.currentUser.username }, {
+        $set: {
+          credits: endCredits
+        }
+      });
+
+      res.cookie("currentUser", currentUser);
+
+      res.status(400).send();
+    });
   })
+
+// app.route("/game/guess-the-lyric")
+//   .get((req, res) => {
+//     // Getting three random lyrics
+//     let songLyrics = [];
+//     for (var i = 0; i < 3; i++) {
+//       rndSong(rndOptions, function(err, rnd) {
+//         if (!err) {
+//           // Grabbing random track ID
+//           const trackId = rnd.track.track_id;
+//
+//           // Generating lyrics API link
+//           const lyricsLink = getLyricsLink(trackId);
+//
+//           // Making API call
+//           axios.get(lyricsLink)
+//             .then((response) => {
+//               // Grabbing lyrics body and splitting on newlines, which splits up all the sentences
+//               let lyrics = response.data.message.body.lyrics.lyrics_body.split("\n").slice(0, -2);
+//               lyrics = lyrics.filter(lyric => lyric.length > 5);
+//
+//               // Grabbing random lyric from the lyrics sentences
+//               const randomLyric = lyrics[Math.floor(Math.random()*lyrics.length)];
+//
+//               songLyrics.push(randomLyric);
+//           });
+//
+//         } else { console.log(new Error(err)); }
+//       });
+//     }
+//
+//     // Getting rid of 'undefined' lyrics
+//     songLyrics = songLyrics.filter(function (el) {
+//       return el != null;
+//     });
+//
+//     // Getting one song + lyric
+//     rndSong(rndOptions, function(err, rnd) {
+//       if (!err) {
+//         // Grabbing random track ID
+//         const trackId = rnd.track.track_id;
+//
+//         // Generating lyrics API link
+//         const lyricsLink = getLyricsLink(trackId);
+//
+//         // Making API call
+//         axios.get(lyricsLink)
+//           .then((response) => {
+//             // Grabbing lyrics body and splitting on newlines, which splits up all the sentences
+//             let lyrics = response.data.message.body.lyrics.lyrics_body.split("\n").slice(0, -2);
+//             lyrics = lyrics.filter(lyric => lyric.length > 5);
+//
+//             // Grabbing random lyric from the lyrics sentences
+//             const randomLyric = lyrics[Math.floor(Math.random()*lyrics.length)];
+//
+//             console.log(songLyrics)
+//
+//             res.render("games/guess-the-lyric.html", context={
+//               song: rnd.track.track_name,
+//               correctLyric: randomLyric,
+//               songLyrics: songLyrics,
+//           });
+//         });
+//
+//       } else { console.log(new Error(err)); }
+//     });
+//   })
 
 
 // Setting up server for production

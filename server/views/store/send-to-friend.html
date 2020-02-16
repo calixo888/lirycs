@@ -2,9 +2,15 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>Dashboard</title>
+    <title>Send To Friend</title>
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/semantic.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css"/>
   </head>
   <body>
     <nav class="navbar navbar-expand-sm navbar-light bg-light">
@@ -36,36 +42,38 @@
     </nav>
 
     <div class="container">
-      <div class="row mt-5">
-        <div class="col-sm">
-          <h1>Dashboard</h1>
-          <h3>Welcome, <%= currentUser.username %></h3>
-
-          <h5>Information</h5>
-          <ul>
-            <li><strong>Name:</strong> <%= currentUser.name %></li>
-            <li><strong>Email:</strong> <%= currentUser.email %></li>
-          </ul>
-        </div>
-        <div class="col-sm">
-          <h3>Dad Jokes</h3>
-          <ul>
-            <% if (dadJokes) { %>
-              <% for (dadJoke of dadJokes) { %>
-                <li><%= dadJoke %></li>
-              <% } %>
-            <% } %>
-          </ul>
-        </div>
-        <div class="col-sm">
-          <h3>Memes</h3>
-          <% if (memes) { %>
-            <% for (meme of memes) { %>
-              <li><%= meme %></li>
-            <% } %>
-          <% } %>
-        </div>
-      </div>
+      <h1>Send To Friend</h1>
+      <form method="post" onsubmit="return validateForm()">
+        <input type="text" name="username" placeholder="Friend's Username">
+        <input class="creditAmountInput" type="number" name="creditAmount" placeholder="Number of Credits">
+        <input type="submit" value="Send!">
+      </form>
     </div>
   </body>
+  <style>
+    .error {
+      display: none;
+    }
+  </style>
+  <script>
+    if ("<%= initialSuccess %>") {
+      alertify.success("<%= initialSuccess %>");
+    }
+
+    if ("<%= initialError %>") {
+      alertify.error("<%= initialError %>");
+    }
+
+    function validateForm() {
+      var creditAmountInputted = document.querySelector(".creditAmountInput").value;
+
+      if (creditAmountInputted > <%= currentUser.credits %>) {
+        alertify.error("You don't have enough credits.")
+        return false;
+      }
+      else {
+        return true;
+      }
+    }
+  </script>
 </html>

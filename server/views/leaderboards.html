@@ -35,6 +35,16 @@
       </div>
     </nav>
 
-    <h1>Leaderboards</h1>
+    <div class="container">
+      <h1>Leaderboards</h1>
+
+      <ul class="list-group">
+        <% for (user of users) { %>
+          <li class="list-group-item">
+            <%= user.index + 1 %>. <strong><%= user.username%></strong> <%= user.credits %>
+          </li>
+        <% } %>
+      </ul>
+    </div>
   </body>
 </html>

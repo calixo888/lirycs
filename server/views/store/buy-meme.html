@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>Dashboard</title>
+    <title>Buy Meme</title>
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   </head>
@@ -36,36 +36,7 @@
     </nav>
 
     <div class="container">
-      <div class="row mt-5">
-        <div class="col-sm">
-          <h1>Dashboard</h1>
-          <h3>Welcome, <%= currentUser.username %></h3>
-
-          <h5>Information</h5>
-          <ul>
-            <li><strong>Name:</strong> <%= currentUser.name %></li>
-            <li><strong>Email:</strong> <%= currentUser.email %></li>
-          </ul>
-        </div>
-        <div class="col-sm">
-          <h3>Dad Jokes</h3>
-          <ul>
-            <% if (dadJokes) { %>
-              <% for (dadJoke of dadJokes) { %>
-                <li><%= dadJoke %></li>
-              <% } %>
-            <% } %>
-          </ul>
-        </div>
-        <div class="col-sm">
-          <h3>Memes</h3>
-          <% if (memes) { %>
-            <% for (meme of memes) { %>
-              <li><%= meme %></li>
-            <% } %>
-          <% } %>
-        </div>
-      </div>
+      <h1>Buy Meme</h1>
     </div>
   </body>
 </html>

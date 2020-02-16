@@ -18,7 +18,8 @@
     "mongodb": "^3.5.3",
     "password-hash": "^1.2.2",
     "rnd-song": "^1.0.2",
-    "sass": "^1.25.0"
+    "sass": "^1.25.0",
+    "sync-request": "^6.1.0"
   },
   "devDependencies": {
     "node-sass": "^4.13.1"

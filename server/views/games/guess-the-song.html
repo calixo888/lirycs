@@ -5,11 +5,16 @@
     <title>Play a Game</title>
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/semantic.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css"/>
   </head>
   <body>
     <nav class="navbar navbar-expand-sm navbar-light bg-light">
       <div class="container">
-        <a class="navbar-brand" href="#">Navbar</a>
+        <a class="navbar-brand" href="/">Lirycs</a>
         <button class="navbar-toggler" data-toggle="collapse" data-target="#navbar-target">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -35,7 +40,45 @@
       </div>
     </nav>
 
+    <p><%= currentUser.credits %></p>
     <h1>Guess the Song</h1>
     <p><%= lyric %></p>
+    <p><%= correctSong %></p>
+
+    <% for (song of songTitles) { %>
+      <label><input type="radio" name="song" value="<%= song %>"> <%= song %></label>
+    <% } %>
+    <button type="submit" onclick="validateAnswer()">Submit</button>
+    <p class="correct-answer"><strong>Correct Answer:</strong> <%= correctSong %></p>
+    <button class="next-question" onclick="window.location.reload()">Next Question</button>
   </body>
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script>
+    window.onload = function() {
+      document.querySelector(".correct-answer").style.display = "none";
+      document.querySelector(".next-question").style.display = "none";
+    }
+
+    function validateAnswer() {
+      const answer = $("input[name='song']:checked").val();
+      var randomCreditNumber = undefined;
+      var operation = undefined;
+      if (answer == "<%= correctSong %>") {
+        randomCreditNumber = Math.floor(Math.random() * 20) + 1;
+        operation = "add";
+        alertify.success(`Correct! You won ${randomCreditNumber} credits!`);
+      }
+      else {
+        randomCreditNumber = Math.floor(Math.random() * 5) + 1;
+        operation = "subtract";
+        alertify.error(`Incorrect. You lost ${randomCreditNumber} credits.`)
+        document.querySelector(".correct-answer").style.display = "block";
+      }
+      document.querySelector(".next-question").style.display = "block";
+
+      fetch(`/game/guess-the-song/?credits=${randomCreditNumber}&operation=${operation}`, {
+          method: "POST"
+      });
+    }
+  </script>
 </html>

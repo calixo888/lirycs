@@ -36,5 +36,35 @@
     </nav>
 
     <h1>Guess the Lyric</h1>
+    <p><%= song %></p>
+    <p><%= correctLyric %></p>
+
+    <p><%= songLyrics %></p>
+
+    <% for (lyric of songLyrics) { %>
+      <label><input type="radio" name="lyric" value="<%= lyric %>"> <%= lyric %></label>
+    <% } %>
+    <button type="submit" onclick="validateAnswer()">Submit</button>
+    <p class="correct-answer"><strong>Correct Answer:</strong> <%= correctLyric %></p>
+    <button class="next-question" onclick="window.location.reload()">Next Question</button>
   </body>
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script>
+    window.onload = function() {
+      document.querySelector(".correct-answer").style.display = "none";
+      document.querySelector(".next-question").style.display = "none";
+    }
+
+    function validateAnswer() {
+      const answer = $("input[name='song']:checked").val();
+      if (answer == "<%= correctLyric %>") {
+        alertify.success("Correct!");
+      }
+      else {
+        alertify.error("Incorrect.")
+        document.querySelector(".correct-answer").style.display = "block";
+      }
+      document.querySelector(".next-question").style.display = "block";
+    }
+  </script>
 </html>

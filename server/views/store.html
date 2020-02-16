@@ -35,6 +35,36 @@
       </div>
     </nav>
 
-    <h1>Store</h1>
+    <div class="container">
+      <h1>Store</h1>
+      <h3>What do you want to do?</h3>
+      <div class="row">
+        <div class="col-sm">
+          <% if (currentUser.credits < 30) { %>
+            <a class="btn btn-primary disabled" href="/store/buy-dad-joke">Buy a Dad Joke</a>
+          <% } else { %>
+            <a class="btn btn-primary" href="/store/buy-dad-joke">Buy a Dad Joke</a>
+          <% } %>
+          <small>30 credits</small>
+        </div>
+        <div class="col-sm">
+          <% if (currentUser.credits < 50) { %>
+            <a class="btn btn-primary disabled" href="/store/buy-meme">Buy a Meme</a>
+          <% } else { %>
+            <a class="btn btn-primary" href="/store/buy-meme">Buy a Meme</a>
+          <% } %>
+          <small>50 credits</small>
+        </div>
+        <div class="col-sm">
+          <a href="/store/gamble">Gamble!</a>
+        </div>
+        <div class="col-sm">
+          <a href="/store/send-to-friend">Send to Friend</a>
+        </div>
+      </div>
+      <p class="text-center mt-5">
+        <strong>You have <%= currentUser.credits %> credits.</strong>
+      </p>
+    </div>
   </body>
 </html>

@@ -7,9 +7,9 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   </head>
   <body>
-    <nav class="navbar navbar-expand-sm navbar-light bg-light">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top">
       <div class="container">
-        <a class="navbar-brand" href="#">Navbar</a>
+        <a class="navbar-brand" href="/">Lirycs</a>
         <button class="navbar-toggler" data-toggle="collapse" data-target="#navbar-target">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -40,26 +40,18 @@
       <h3>What do you want to do?</h3>
       <div class="row">
         <div class="col-sm">
-          <% if (currentUser.credits < 30) { %>
+          <% if (currentUser.credits < 100) { %>
             <a class="btn btn-primary disabled" href="/store/buy-dad-joke">Buy a Dad Joke</a>
           <% } else { %>
             <a class="btn btn-primary" href="/store/buy-dad-joke">Buy a Dad Joke</a>
           <% } %>
-          <small>30 credits</small>
+          <small>100 credits</small>
         </div>
         <div class="col-sm">
-          <% if (currentUser.credits < 50) { %>
-            <a class="btn btn-primary disabled" href="/store/buy-meme">Buy a Meme</a>
-          <% } else { %>
-            <a class="btn btn-primary" href="/store/buy-meme">Buy a Meme</a>
-          <% } %>
-          <small>50 credits</small>
+          <a class="btn btn-primary" href="/store/gamble">Gamble!</a>
         </div>
         <div class="col-sm">
-          <a href="/store/gamble">Gamble!</a>
-        </div>
-        <div class="col-sm">
-          <a href="/store/send-to-friend">Send to Friend</a>
+          <a class="btn btn-primary" href="/store/send-to-friend">Send to Friend</a>
         </div>
       </div>
       <p class="text-center mt-5">
@@ -67,4 +59,14 @@
       </p>
     </div>
   </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" charset="utf-8"></script>
+  <script>
+    $(function () {
+      $(document).scroll(function () {
+        var $nav = $(".fixed-top");
+        $nav.toggleClass('scrolled navbar-light', $(this).scrollTop() > $nav.height());
+        $nav.toggleClass('navbar-dark', $(this).scrollTop() < $nav.height())
+      });
+    });
+  </script>
 </html>

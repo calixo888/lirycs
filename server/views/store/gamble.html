@@ -5,11 +5,17 @@
     <title>Gamble</title>
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/semantic.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css"/>
   </head>
   <body>
-    <nav class="navbar navbar-expand-sm navbar-light bg-light">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top">
       <div class="container">
-        <a class="navbar-brand" href="#">Navbar</a>
+        <a class="navbar-brand" href="/">Lirycs</a>
         <button class="navbar-toggler" data-toggle="collapse" data-target="#navbar-target">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -37,6 +43,96 @@
 
     <div class="container">
       <h1>Gamble</h1>
+      <p>Remember! Your rate of success is lower as you gamble higher!</p>
+      <div class="row">
+        <div class="col-sm">
+          <h3>Low Commitment</h3>
+          <p>Max Reward: 20 credits</p>
+          <button class="btn btn-primary" onclick="gamble(10, 20)">Pay 10 credits</button>
+        </div>
+        <div class="col-sm">
+          <h3>Pay up!</h3>
+          <p>Max Reward: 150 credits</p>
+          <button class="btn btn-primary" onclick="gamble(50, 150)">Pay 50 credits</button>
+        </div>
+        <div class="col-sm">
+          <h3>Let's make some money!</h3>
+          <p>Max Reward: 300 credits</p>
+          <button class="btn btn-primary" onclick="gamble(100, 300)">Pay 100 credits</button>
+        </div>
+        <div class="col-sm">
+          <h3>We in Vegas!</h3>
+          <p>Max Reward: 2000 credits</p>
+          <button class="btn btn-primary" onclick="gamble(500, 2000)">Pay 500 credits</button>
+        </div>
+      </div>
     </div>
   </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" charset="utf-8"></script>
+  <script>
+    function setButtonAttributes(creditsLeft) {
+      // Disabling any buttons that are too expensive
+      var allGambleButtons = document.querySelectorAll("button");
+      // allGambleButtons = allGambleButtons.splice(0, 1);
+      allGambleButtons = [].slice.call(allGambleButtons);
+      allGambleButtons.shift();
+
+      for (gambleButton of allGambleButtons) {
+        var gambleButtonCost = parseInt(gambleButton.innerHTML.split(" ")[1]);
+
+        if (creditsLeft < gambleButtonCost) {
+          gambleButton.setAttribute("disabled", true);
+          gambleButton.setAttribute("onclick", null);
+        }
+        else {
+          gambleButton.removeAttribute("disabled");
+
+          switch (gambleButtonCost) {
+            case 10:
+              gambleButton.setAttribute("onclick", "gamble(10, 20, 0.5)");
+              break;
+            case 50:
+              gambleButton.setAttribute("onclick", "gamble(50, 150, 0.55)");
+              break;
+            case 100:
+              gambleButton.setAttribute("onclick", "gamble(100, 300, 0.6)");
+              break;
+            case 500:
+              gambleButton.setAttribute("onclick", "gamble(500, 2000, 0.65)");
+              break;
+          }
+        }
+      }
+    }
+
+    function gamble(creditAmount, potentialReward, failureRate) {
+      fetch(`/store/gamble/?creditAmount=${creditAmount}&failureRate=${failureRate}`, {
+        method: "POST"
+      }).then((response) => {
+        return response.json()
+      }).then((jsonData) => {
+        const result = jsonData.result;
+        const creditsLeft = jsonData.creditsLeft;
+
+        if (result) {
+          alertify.success(`Congratulations! You won ${potentialReward} credits! You have ${creditsLeft} credits remaining.`);
+        }
+        else {
+          alertify.error(`Whoops! You lost ${creditAmount} credits. You have ${creditsLeft} credits remaining.`)
+        }
+
+        setButtonAttributes(creditsLeft);
+      });
+    }
+
+    setButtonAttributes(<%= currentUser.credits %>);
+
+    $(function () {
+      $(document).scroll(function () {
+        var $nav = $(".fixed-top");
+        $nav.toggleClass('scrolled navbar-light', $(this).scrollTop() > $nav.height());
+        $nav.toggleClass('navbar-dark', $(this).scrollTop() < $nav.height())
+      });
+    });
+  </script>
 </html>

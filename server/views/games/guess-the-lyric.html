@@ -7,9 +7,9 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   </head>
   <body>
-    <nav class="navbar navbar-expand-sm navbar-light bg-light">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top">
       <div class="container">
-        <a class="navbar-brand" href="#">Navbar</a>
+        <a class="navbar-brand" href="/">Lirycs</a>
         <button class="navbar-toggler" data-toggle="collapse" data-target="#navbar-target">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -48,7 +48,7 @@
     <p class="correct-answer"><strong>Correct Answer:</strong> <%= correctLyric %></p>
     <button class="next-question" onclick="window.location.reload()">Next Question</button>
   </body>
-  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" charset="utf-8"></script>
   <script>
     window.onload = function() {
       document.querySelector(".correct-answer").style.display = "none";
@@ -66,5 +66,13 @@
       }
       document.querySelector(".next-question").style.display = "block";
     }
+
+    $(function () {
+      $(document).scroll(function () {
+        var $nav = $(".fixed-top");
+        $nav.toggleClass('scrolled navbar-light', $(this).scrollTop() > $nav.height());
+        $nav.toggleClass('navbar-dark', $(this).scrollTop() < $nav.height())
+      });
+    });
   </script>
 </html>

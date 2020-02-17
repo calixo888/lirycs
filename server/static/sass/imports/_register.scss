@@ -1,0 +1,25 @@
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 50px;
+}
+
+.contact-input {
+  display: block;
+  background-color: transparent;
+  border: 2px solid white;
+  border-radius: 4px;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  width: 100%;
+  transition: all .2s;
+}
+
+.contact-input::placeholder {
+  color: white;
+}
+
+.contact-input:focus {
+  outline: none;
+  background-color: rgba(255,255,255,.3);
+}

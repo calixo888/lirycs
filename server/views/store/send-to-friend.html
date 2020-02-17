@@ -13,9 +13,9 @@
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css"/>
   </head>
   <body>
-    <nav class="navbar navbar-expand-sm navbar-light bg-light">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top">
       <div class="container">
-        <a class="navbar-brand" href="#">Navbar</a>
+        <a class="navbar-brand" href="/">Lirycs</a>
         <button class="navbar-toggler" data-toggle="collapse" data-target="#navbar-target">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -55,6 +55,7 @@
       display: none;
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" charset="utf-8"></script>
   <script>
     if ("<%= initialSuccess %>") {
       alertify.success("<%= initialSuccess %>");
@@ -75,5 +76,13 @@
         return true;
       }
     }
+
+    $(function () {
+      $(document).scroll(function () {
+        var $nav = $(".fixed-top");
+        $nav.toggleClass('scrolled navbar-light', $(this).scrollTop() > $nav.height());
+        $nav.toggleClass('navbar-dark', $(this).scrollTop() < $nav.height())
+      });
+    });
   </script>
 </html>

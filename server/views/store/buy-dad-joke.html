@@ -7,9 +7,9 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   </head>
   <body>
-    <nav class="navbar navbar-expand-sm navbar-light bg-light">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top">
       <div class="container">
-        <a class="navbar-brand" href="#">Navbar</a>
+        <a class="navbar-brand" href="/">Lirycs</a>
         <button class="navbar-toggler" data-toggle="collapse" data-target="#navbar-target">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -37,7 +37,7 @@
 
     <div class="container">
       <h1>Buy Dad Joke</h1>
-      <button class="btn btn-primary" onclick="getDadJoke()">Buy Dad Joke! - 30 credits</button>
+      <button class="btn btn-primary" onclick="getDadJoke()">Buy Dad Joke! - 100 credits</button>
 
       <p class="dadJoke"><%= dadJoke %></p>
     </div>
@@ -47,6 +47,7 @@
       display: none;
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" charset="utf-8"></script>
   <script>
     function getDadJoke() {
       fetch("/store/buy-dad-joke", {
@@ -62,5 +63,13 @@
         joke_label.style.display = "block";
       });
     }
+
+    $(function () {
+      $(document).scroll(function () {
+        var $nav = $(".fixed-top");
+        $nav.toggleClass('scrolled navbar-light', $(this).scrollTop() > $nav.height());
+        $nav.toggleClass('navbar-dark', $(this).scrollTop() < $nav.height())
+      });
+    });
   </script>
 </html>

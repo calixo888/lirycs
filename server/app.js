@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 const passwordHash = require("password-hash");
 const axios = require("axios");
 const rndSong = require("rnd-song");
+const nodemailer = require("nodemailer");
 
 // Global configurations for 'rnd-song' to pull a random song
 const rndOptions = {
@@ -35,8 +36,7 @@ const mongoUrl = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const musixMatchAPIKey = "4120048823986300b7c8140a18addb4f";
 
 // Store Item Credit Prices
-const dadJokeCreditPrice = 30;
-const memeCreditprice = 50;
+const dadJokeCreditPrice = 100;
 
 // Global API link generators
 const getLyricsLink = (trackId) => {
@@ -330,6 +330,63 @@ app.route("/store/buy-meme")
 app.route("/store/gamble")
   .get((req, res) => {
     res.render("store/gamble.html");
+  })
+
+  .post((req, res) => {
+    const creditAmount = parseInt(req.query.creditAmount);
+    const failureRate = parseFloat(req.query.failureRate);
+
+    // Grabbing currentUser saved in cookies
+    const currentUser = req.cookies.currentUser;
+
+    // Generating random gamble outcome
+    const gambleResult = Math.random() >= failureRate;
+
+    // Getting value to add to credits
+    // First, gamble fee is subtracted
+    // Then, if gamble is successful, prize credits are added
+    // Else, if gamble isn't successful, nothing is added
+    let endCreditTransactionAmount = -creditAmount;
+    switch (creditAmount) {
+      case 10:
+        if (gambleResult) endCreditTransactionAmount += 20 + creditAmount;
+        break;
+      case 50:
+        if (gambleResult) endCreditTransactionAmount += 150 + creditAmount;
+        break;
+      case 100:
+        if (gambleResult) endCreditTransactionAmount += 300 + creditAmount;
+        break;
+      case 500:
+        if (gambleResult) endCreditTransactionAmount += 2000 + creditAmount;
+        break;
+    }
+
+    // Subtracting creditAmount from user credits
+    MongoClient.connect(mongoUrl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    }, (err, client) => {
+      if (err) throw err;
+
+      const userCollection = client.db("lirycs").collection("users");
+
+      // Modifying currentUser's database credits value
+      userCollection.updateOne({ username: currentUser.username }, {
+        $set: {
+          credits: currentUser.credits + endCreditTransactionAmount
+        }
+      });
+
+      // Modifying 'currentUser' cookie
+      currentUser.credits = currentUser.credits + endCreditTransactionAmount;
+      res.cookie("currentUser", currentUser);
+
+      res.send({
+        result: gambleResult,
+        creditsLeft: currentUser.credits
+      });
+    });
   });
 
 app.route("/store/send-to-friend")
@@ -559,6 +616,29 @@ app.route("/game/guess-the-song")
 //       } else { console.log(new Error(err)); }
 //     });
 //   })
+
+
+// API METHODS
+app.post("/api/send-email", async (req, res) => {
+  const name = req.query.name;
+  const email = req.query.email;
+  const message = req.query.message;
+
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "gamestrike.info@gmail.com",
+      pass: "#gamestrike4life"
+    }
+  });
+
+  let info = await transporter.sendMail({
+    from: email,
+    to: "calix.huang1@gmail.com",
+    subject: "Lirycs - Contact Us",
+    text: message
+  });
+})
 
 
 // Setting up server for production

@@ -1,0 +1,12 @@
+.list-group * {
+  color: black !important;
+}
+
+.list-group-item {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.score {
+  text-align: right;
+}

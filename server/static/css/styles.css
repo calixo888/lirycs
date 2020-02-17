@@ -10,10 +10,13 @@ body {
 body * {
   color: white; }
 
+h1 {
+  font-size: 55px !important; }
+
 .primary-cta-button {
   border: none;
-  background-image: linear-gradient(to right, var(--color-light), var(--color-dark));
-  padding: 15px 20px;
+  background-image: linear-gradient(to right, #ff6f59, #ff4e33);
+  padding: 10px 15px;
   font-size: 20px;
   border-radius: 4px;
   transition: all .2s;
@@ -79,3 +82,33 @@ body * {
 .contact-input:focus {
   outline: none;
   background-color: rgba(255, 255, 255, 0.3); }
+
+.dashboard-card {
+  padding: 20px; }
+
+.dashboard-card * {
+  color: black; }
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-gap: 30px; }
+
+.game * {
+  color: black; }
+
+.game {
+  background-color: white;
+  padding: 30px;
+  border-radius: 4px;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3); }
+
+.list-group * {
+  color: black !important; }
+
+.list-group-item {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr); }
+
+.score {
+  text-align: right; }

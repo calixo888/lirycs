@@ -17,10 +17,14 @@ body * {
   color: white;
 }
 
+h1 {
+  font-size: 55px;
+}
+
 .primary-cta-button {
   border: none;
-  background-image: linear-gradient(to right, var(--color-light), var(--color-dark));
-  padding: 15px 20px;
+  background-image: linear-gradient(to right, $color-light, $color-dark);
+  padding: 10px 15px;
   font-size: 20px;
   border-radius: 4px;
   transition: all .2s;

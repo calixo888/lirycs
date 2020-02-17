@@ -36,22 +36,39 @@
     </nav>
 
     <div class="container">
-      <h1>Store</h1>
-      <h3>What do you want to do?</h3>
-      <div class="row">
+      <h1 class="text-center">Store</h1>
+      <div class="row mt-5">
         <div class="col-sm">
-          <% if (currentUser.credits < 100) { %>
-            <a class="btn btn-primary disabled" href="/store/buy-dad-joke">Buy a Dad Joke</a>
-          <% } else { %>
-            <a class="btn btn-primary" href="/store/buy-dad-joke">Buy a Dad Joke</a>
-          <% } %>
-          <small>100 credits</small>
+          <div class="dashboard-card card">
+            <h3>Buy a Dad Joke</h3>
+            <p>
+              We have gathered thousands and thousands of Dad Jokes that you can buy with only 100 credits. They guaranteed to make you laugh! Remember, once you buy it, you can keep it forever in you dashboard.
+            </p>
+            <% if (currentUser.credits < 100) { %>
+              <a class="primary-cta-button disabled" href="/store/buy-dad-joke">Buy a Dad Joke</a>
+            <% } else { %>
+              <a style="align-self: flex-start;" class="primary-cta-button" href="/store/buy-dad-joke">Buy a Dad Joke</a>
+            <% } %>
+            <small>100 credits</small>
+          </div>
         </div>
         <div class="col-sm">
-          <a class="btn btn-primary" href="/store/gamble">Gamble!</a>
+          <div class="dashboard-card card">
+            <h3>Gamble!</h3>
+            <p>
+              Want to earn credits quick? Gambling is for you. You can either win double, triple, or quadruple your money in the matter of minutes, or lose it all. Play at your own risk!
+            </p>
+            <a style="align-self: flex-start;" class="primary-cta-button" href="/store/gamble">Gamble!</a>
+          </div>
         </div>
         <div class="col-sm">
-          <a class="btn btn-primary" href="/store/send-to-friend">Send to Friend</a>
+          <div class="dashboard-card card">
+            <h3>Send to Friend</h3>
+            <p>
+              Feeling generous! Send it to a friend! All you need is their username and enough credits, and you can transfer as many credits you want!
+            </p>
+            <a style="align-self: flex-start;" class="primary-cta-button" href="/store/send-to-friend">Send to Friend</a>
+          </div>
         </div>
       </div>
       <p class="text-center mt-5">

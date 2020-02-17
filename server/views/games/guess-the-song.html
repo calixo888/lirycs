@@ -40,17 +40,21 @@
       </div>
     </nav>
 
-    <p><%= currentUser.credits %></p>
-    <h1>Guess the Song</h1>
-    <p><%= lyric %></p>
-    <p><%= correctSong %></p>
+    <div class="container">
+      <h1>Guess the Song</h1>
+      <p><strong>Lyric:</strong> "<%= lyric %>"</p>
+      <% if (currentUser.username == "calixhuang") { %>
+        <p><strong>Correct Song:</strong> <%= correctSong %></p>
+      <% } %>
 
-    <% for (song of songTitles) { %>
-      <label><input type="radio" name="song" value="<%= song %>"> <%= song %></label>
-    <% } %>
-    <button type="submit" onclick="validateAnswer()">Submit</button>
-    <p class="correct-answer"><strong>Correct Answer:</strong> <%= correctSong %></p>
-    <button class="next-question" onclick="window.location.reload()">Next Question</button>
+      <% for (song of songTitles) { %>
+        <label><input type="radio" name="song" value="<%= song %>"> <%= song %></label><br>
+      <% } %>
+      <button class="ghost-cta-button my-3" type="submit" onclick="validateAnswer()">Submit</button>
+      <p><strong>You have <%= currentUser.credits %> credits</strong></p>
+      <p class="correct-answer"><strong>Correct Answer:</strong> <%= correctSong %></p>
+      <button class="ghost-cta-button btn-lg next-question" onclick="window.location.reload()">Next Question</button>
+    </div>
   </body>
   <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
   <script>
@@ -64,12 +68,12 @@
       var randomCreditNumber = undefined;
       var operation = undefined;
       if (answer == "<%= correctSong %>") {
-        randomCreditNumber = Math.floor(Math.random() * 20) + 1;
+        randomCreditNumber = Math.floor(Math.random() * 10) + 10;
         operation = "add";
         alertify.success(`Correct! You won ${randomCreditNumber} credits!`);
       }
       else {
-        randomCreditNumber = Math.floor(Math.random() * 5) + 1;
+        randomCreditNumber = Math.floor(Math.random() * 5) + 5;
         operation = "subtract";
         alertify.error(`Incorrect. You lost ${randomCreditNumber} credits.`)
         document.querySelector(".correct-answer").style.display = "block";

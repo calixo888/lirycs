@@ -1,0 +1,16 @@
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-gap: 30px;
+}
+
+.game * {
+  color: black;
+}
+
+.game {
+  background-color: white;
+  padding: 30px;
+  border-radius: 4px;
+  box-shadow: 0 3px 5px rgba(0,0,0,.3);
+}

@@ -36,15 +36,23 @@
     </nav>
 
     <div class="container">
-      <h1>Buy Dad Joke</h1>
-      <button class="btn btn-primary" onclick="getDadJoke()">Buy Dad Joke! - 100 credits</button>
+      <h1 class="text-center">Buy Dad Joke</h1>
+      <div class="text-center mt-5">
+        <button class="ghost-cta-button" onclick="getDadJoke()">Buy Dad Joke! - 100 credits</button>
+        <br>
 
-      <p class="dadJoke"><%= dadJoke %></p>
+        <p class="dadJoke"><%= dadJoke %></p>
+      </div>
     </div>
   </body>
   <style>
     .dadJoke {
       display: none;
+      background-color: rgb(78, 200, 121);
+      border: 2px solid rgb(34, 198, 91);
+      border-radius: 4px;
+      padding: 10px 15px;
+      margin-top: 20px;
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" charset="utf-8"></script>
@@ -60,7 +68,7 @@
         var joke_label = document.querySelector(".dadJoke");
 
         joke_label.innerHTML = dadJoke;
-        joke_label.style.display = "block";
+        joke_label.style.display = "inline-block";
       });
     }
 

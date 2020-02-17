@@ -42,11 +42,13 @@
     </nav>
 
     <div class="container">
-      <h1>Send To Friend</h1>
-      <form method="post" onsubmit="return validateForm()">
-        <input type="text" name="username" placeholder="Friend's Username">
-        <input class="creditAmountInput" type="number" name="creditAmount" placeholder="Number of Credits">
-        <input type="submit" value="Send!">
+      <h1 class="text-center mb-5">Send To Friend</h1>
+      <form class="w-50 m-auto" method="post" onsubmit="return validateForm()">
+        <input class="contact-input" type="text" name="username" placeholder="Friend's Username">
+        <input class="creditAmountInput contact-input" type="number" name="creditAmount" placeholder="Number of Credits">
+        <div class="text-center">
+          <input class="ghost-cta-button w-25" type="submit" value="Send!">
+        </div>
       </form>
     </div>
   </body>

@@ -42,28 +42,36 @@
     </nav>
 
     <div class="container">
-      <h1>Gamble</h1>
-      <p>Remember! Your rate of success is lower as you gamble higher!</p>
-      <div class="row">
+      <h1 class="text-center">Gamble</h1>
+      <p class="text-center">Remember! Your rate of success is lower as you gamble higher!</p>
+      <div class="row mt-5">
         <div class="col-sm">
-          <h3>Low Commitment</h3>
-          <p>Max Reward: 20 credits</p>
-          <button class="btn btn-primary" onclick="gamble(10, 20)">Pay 10 credits</button>
+          <div class="dashboard-card card">
+            <h3>For the Broke</h3>
+            <p>Max Reward: 20 credits</p>
+            <button style="align-self: flex-start;" class="primary-cta-button" onclick="gamble(10, 20)">Pay 10 credits</button>
+          </div>
         </div>
         <div class="col-sm">
-          <h3>Pay up!</h3>
-          <p>Max Reward: 150 credits</p>
-          <button class="btn btn-primary" onclick="gamble(50, 150)">Pay 50 credits</button>
+          <div class="dashboard-card card">
+            <h3>Pay up!</h3>
+            <p>Max Reward: 150 credits</p>
+            <button style="align-self: flex-start;" class="primary-cta-button" onclick="gamble(50, 150)">Pay 50 credits</button>
+          </div>
         </div>
         <div class="col-sm">
-          <h3>Let's make some money!</h3>
-          <p>Max Reward: 300 credits</p>
-          <button class="btn btn-primary" onclick="gamble(100, 300)">Pay 100 credits</button>
+          <div class="dashboard-card card">
+            <h3>I see you...</h3>
+            <p>Max Reward: 300 credits</p>
+            <button style="align-self: flex-start;" class="primary-cta-button" onclick="gamble(100, 300)">Pay 100 credits</button>
+          </div>
         </div>
         <div class="col-sm">
-          <h3>We in Vegas!</h3>
-          <p>Max Reward: 2000 credits</p>
-          <button class="btn btn-primary" onclick="gamble(500, 2000)">Pay 500 credits</button>
+          <div class="dashboard-card card">
+            <h3>We in Vegas!</h3>
+            <p>Max Reward: 2000 credits</p>
+            <button style="align-self: flex-start;" class="primary-cta-button" onclick="gamble(500, 2000)">Pay 500 credits</button>
+          </div>
         </div>
       </div>
     </div>

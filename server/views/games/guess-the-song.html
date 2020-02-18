@@ -68,20 +68,26 @@
       var randomCreditNumber = undefined;
       var operation = undefined;
       if (answer == "<%= correctSong %>") {
-        randomCreditNumber = Math.floor(Math.random() * 10) + 10;
         operation = "add";
-        alertify.success(`Correct! You won ${randomCreditNumber} credits!`);
       }
       else {
-        randomCreditNumber = Math.floor(Math.random() * 5) + 5;
         operation = "subtract";
-        alertify.error(`Incorrect. You lost ${randomCreditNumber} credits.`)
         document.querySelector(".correct-answer").style.display = "block";
       }
       document.querySelector(".next-question").style.display = "block";
 
-      fetch(`/game/guess-the-song/?credits=${randomCreditNumber}&operation=${operation}`, {
+      fetch(`/game/guess-the-song/?operation=${operation}`, {
           method: "POST"
+      }).then((response) => {
+        return response.json()
+      }).then((jsonData) => {
+        const credits = jsonData.credits;
+        if (operation == "add") {
+          alertify.success(`Correct! You won ${credits} credits!`);
+        }
+        else {
+          alertify.error(`Incorrect. You lost ${credits} credits.`);
+        }
       });
     }
 

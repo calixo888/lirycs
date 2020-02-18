@@ -97,24 +97,24 @@
 
           switch (gambleButtonCost) {
             case 10:
-              gambleButton.setAttribute("onclick", "gamble(10, 20, 0.5)");
+              gambleButton.setAttribute("onclick", "gamble(10, 20)");
               break;
             case 50:
-              gambleButton.setAttribute("onclick", "gamble(50, 150, 0.55)");
+              gambleButton.setAttribute("onclick", "gamble(50, 150)");
               break;
             case 100:
-              gambleButton.setAttribute("onclick", "gamble(100, 300, 0.6)");
+              gambleButton.setAttribute("onclick", "gamble(100, 300)");
               break;
             case 500:
-              gambleButton.setAttribute("onclick", "gamble(500, 2000, 0.65)");
+              gambleButton.setAttribute("onclick", "gamble(500, 2000)");
               break;
           }
         }
       }
     }
 
-    function gamble(creditAmount, potentialReward, failureRate) {
-      fetch(`/store/gamble/?creditAmount=${creditAmount}&failureRate=${failureRate}`, {
+    function gamble(creditAmount, potentialReward) {
+      fetch(`/store/gamble/?creditAmount=${creditAmount}`, {
         method: "POST"
       }).then((response) => {
         return response.json()

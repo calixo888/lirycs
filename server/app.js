@@ -334,7 +334,22 @@ app.route("/store/gamble")
 
   .post((req, res) => {
     const creditAmount = parseInt(req.query.creditAmount);
-    const failureRate = parseFloat(req.query.failureRate);
+
+    let failureRate = undefined;
+    switch (creditAmount) {
+      case 10:
+        failureRate = 0.5;
+        break;
+      case 50:
+        failureRate = 0.6;
+        break;
+      case 100:
+        failureRate = 0.7;
+        break;
+      case 500:
+        failureRate = 0.8;
+        break;
+    }
 
     // Grabbing currentUser saved in cookies
     const currentUser = req.cookies.currentUser;
@@ -510,10 +525,15 @@ app.route("/game/guess-the-song")
 
   .post((req, res) => {
     const operation = req.query.operation;
-    let credits = req.query.credits;
 
-    // Parsing string to integer
-    credits = parseInt(credits);
+    // Calculating credit amount server-side
+    let credits = undefined;
+    if (operation == "add") {
+      credits = Math.floor(Math.random() * 10) + 10;
+    }
+    else {
+      credits = Math.floor(Math.random() * 5) + 5;
+    }
 
     // Adding/subtracting credits from user's total credits
     MongoClient.connect(mongoUrl, {
@@ -546,7 +566,7 @@ app.route("/game/guess-the-song")
 
       res.cookie("currentUser", currentUser);
 
-      res.status(400).send();
+      res.send({ credits })
     });
   })
 
